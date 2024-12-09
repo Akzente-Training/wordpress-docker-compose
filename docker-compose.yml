@@ -2,11 +2,12 @@ version: '3'
 
 services:
   wp:
+    container_name: wordpress
     image: wordpress:latest # https://hub.docker.com/_/wordpress/
     ports:
       - ${IP}:${PORT}:80 # change ip if required
     volumes:
-      - ./config/wp_php.ini:/usr/local/etc/php/conf.d/conf.ini
+      - wp_php_config:/usr/local/etc/php/conf.d
       - ./wp-app:/var/www/html # Full wordpress project
       #- ./plugin-name/trunk/:/var/www/html/wp-content/plugins/plugin-name # Plugin development
       #- ./theme-name/trunk/:/var/www/html/wp-content/themes/theme-name # Theme development
@@ -21,6 +22,7 @@ services:
       - db
 
   wpcli:
+    container_name: wpcli
     image: wordpress:cli
     volumes:
       - ./config/wp_php.ini:/usr/local/etc/php/conf.d/conf.ini
@@ -35,6 +37,7 @@ services:
       - wp
 
   pma:
+    container_name: phpmyadmin
     image: phpmyadmin:latest  # https://hub.docker.com/_/phpmyadmin
     environment:
       # https://docs.phpmyadmin.net/en/latest/setup.html#docker-environment-variables
@@ -51,6 +54,7 @@ services:
      - ./config/pma_config.php:/etc/phpmyadmin/config.user.inc.php
 
   db:
+    container_name: mariadb
     image: mysql:latest # https://hub.docker.com/_/mysql/ - or mariadb https://hub.docker.com/_/mariadb
     # platform: linux/x86_64  # Uncomment if your machine is running on arm (ex: Apple Silicon processor)
     ports:
@@ -67,4 +71,7 @@ services:
       MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASSWORD}"
 
 volumes:
+  wp_php_config:
+    external: true
   db_data:
+    #external: true
